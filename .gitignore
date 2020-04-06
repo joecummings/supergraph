@@ -3,5 +3,5 @@ data/tear/
 data/*.json
 
 .vscode/
-.DS_Store/
+.DS_Store
 __pycache__/
