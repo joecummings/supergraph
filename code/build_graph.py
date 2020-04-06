@@ -41,22 +41,39 @@ def standardize_oneie_format(oneie_raw: dict) -> dict:
         oneie_formatted[doc] = {}
         oneie_formatted[doc]["events"] = []
         for seg in oneie_raw[doc]:
-            staged_event = {}
-            if seg["graph"]["triggers"]:
-                for i,trig in enumerate(seg["graph"]["triggers"]):
-                    start_trig_idx = seg["token_ids"][trig[0]]
-                    idxs = start_trig_idx.split(":")[1].split("-")
-                    full_trig_idx = "".join(["[", idxs[0], ":", str(int(idxs[1])+1), ")"])
-                    
-                    
-                    oneie_formatted[doc]["events"].append({
-                            "event_id": full_trig_idx, 
-                            "type": seg["graph"]["triggers"][i][2],
-                        })
-            
+            idx_to_event = {} # temp directory to hold the event that we're building/converting
+
+            for i,trig in enumerate(seg["graph"]["triggers"]): # need to create the event_id first
+                start_trig_idx = seg["token_ids"][trig[0]]
+                idxs = start_trig_idx.split(":")[1].split("-")
+                full_idx = "".join(["[", idxs[0], ":", str(int(idxs[1])+1), ")"])
+
+                idx_to_event[i] = {
+                        "event_id": full_idx, 
+                        "type": seg["graph"]["triggers"][i][2],
+                        "arguments": []
+                    }
                 
-                print(res_str)
-        exit(0)
+            for role in seg["graph"]["roles"]: # add argument and argument roles to the event
+                entity_idx = role[1]
+                entity_tkn_start_idx = seg["graph"]["entities"][entity_idx][0]
+                entity_tkn_end_idx = seg["graph"]["entities"][entity_idx][1]
+                entity_lst = []
+
+                # get entity
+                for j in range(entity_tkn_start_idx, entity_tkn_end_idx):
+                    entity_lst.append(seg["tokens"][j])
+                entity = " ".join(entity_lst)
+
+                event_idx = role[0]
+                idx_to_event[event_idx]["arguments"].append({
+                    "role": role[2],
+                    "token": entity
+                })
+                
+                # add event to the final events graph
+                oneie_formatted[doc]["events"].append(idx_to_event[event_idx])
+
     return oneie_formatted
 
 def combine_graphs(graphs: Dict[str, dict]) -> dict:
@@ -68,25 +85,43 @@ def combine_graphs(graphs: Dict[str, dict]) -> dict:
     for g in graphs:
         for doc in graphs[g]:
             if doc not in supergraph.keys():
-                supergraph[doc] = {"events": {}}
+                supergraph[doc] = {}
 
-            all_events = graphs[g][doc]["events"]
-            events_in_supergraph = supergraph[doc]["events"].keys()
+            all_events_in_g = graphs[g][doc]["events"]
+            events_in_supergraph = supergraph[doc].keys()
             
-            for event in all_events:
-                event["source"] = [g] # set source name
-                event["relations"] = [] # initialize relations
+            for event in all_events_in_g:
+                new_event = {}
+                
                 event_id = event["event_id"]
-                if event_id in events_in_supergraph:
-                    supergraph[doc]["events"][event_id]["source"].extend(event["source"])
+
+                if g == "oneie":
+                    new_event["type"] = event["type"]
+                    new_event["oneie_args"] = event["arguments"]
                 else:
-                    supergraph[doc]["events"][event_id] = event
+                    new_event["text"] = event["text"]
+                    new_event[f"{g}_args"] = event["arguments"] #TODO: get text from mention_id 
+                
+                if event_id in events_in_supergraph:
+                    # print(supergraph[doc][event_id])
+                    supergraph[doc][event_id].update(new_event)
+                    # print(supergraph[doc][event_id])
+                    supergraph[doc][event_id]["source"].append(g) # this actually causes duplicates but that's okay for now
+                else:
+                    # print(g)
+                    new_event["source"] = [g] # set source name
+                    supergraph[doc][event_id] = new_event
+                
+                
         
             if g != "oneie":
                 all_relations = graphs[g][doc]["relations"]
                 for relation in all_relations:
                     key = relation["event1_id"]
-                    supergraph[doc]["events"][key]["relations"].append(relation)
+                    if supergraph[doc][key].get("relations"):
+                        supergraph[doc][key]["relations"].append(relation)
+                    else:
+                        supergraph[doc][key]["relations"] = [relation]
 
     return supergraph
 

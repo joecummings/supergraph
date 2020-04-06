@@ -1,15 +1,20 @@
-import json
-from pathlib import Path
+import csv
 import datetime
 import itertools
-import matplotlib.pyplot as plt
-from matplotlib_venn import venn3_unweighted
-from collections import Counter
+import json
 import pdb
+from collections import Counter
+from pathlib import Path
+from typing import Dict, List
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib_venn import venn3_unweighted
 
 DATA_FOLDER = Path("../data/")
 SRCS = ["oneie", "tear-tbd", "tear-matres"]
 BOUNDS = [0.75, 0.85, 0.95]
+TODAY = datetime.datetime.now().isoformat()
 
 def find_good_relations(graph, doc, found_in_both):
     good_relations = [0,0,0]
@@ -29,30 +34,53 @@ def find_good_relations(graph, doc, found_in_both):
 
     return good_relations, relations
 
-def main():
-    
-    with open(DATA_FOLDER / "output/supergraph.json", "r") as f:
-        graph = json.load(f)
-    
-    with open(f"../analysis/{datetime.datetime.now().isoformat()}.txt", "w") as out_f:
+def calc_rel_distribution(doc: str, graph: dict) -> List[float]:
+    rel_conf_scores = []
+
+    for event in graph[doc]["events"]:
+        for relation in graph[doc]["events"][event]["relations"]:
+            rel_conf_scores.append(relation["confidence"])
+
+    return rel_conf_scores
+
+def plot_rel_distribution(doc: str, graph: dict) -> None:
+    conf_scores = calc_rel_distribution(doc, graph)
+
+    plt.figure()
+
+    plt.hist(conf_scores, edgecolor = "black", range=(0, 1))
+
+    plt.title(f"Distribution of E-E Relation Confidences for Events in Doc {doc}")
+    plt.xlabel("E-E Relation Confidence Score (%)")
+    plt.ylabel("E-E Relations")
+
+    plt.savefig(f"../analysis/figures/{doc}_relation_dist")
+
+    return
+
+def generate_text_report_and_figures(graph):
+    with open(f"../analysis/{TODAY}.txt", "w") as out_f:
         for doc in graph:
             out_f.write(f"Doc ID: {doc}\n")
-            
+
+            plot_rel_distribution(doc, graph)
+
             venn = {}
             for src in SRCS:
                 src_docs = [x for x in graph[doc]["events"] if src in graph[doc]["events"][x]["source"]]
 
                 # gr, ar = find_good_relations(graph, doc, src_docs)
                 # print(gr, ar)
+                gr, ar = find_good_relations(graph, doc, src_docs)
 
                 num_src_docs = len(src_docs)
-                out_f.write(f"\tEvents extracted by '{src}': {num_src_docs}\n")
+                out_f.write(f"\tEvents extracted by '{src}': {num_src_docs}; % relations conf >= 75%: {round(gr[0]/ar, 2)}\n")
 
                 venn[src] = Counter(src_docs)
             # exit()
             plt.figure()    
             c = venn3_unweighted([venn["oneie"], venn["tear-tbd"], venn["tear-matres"]], tuple(["OneIE Events", "TEAR-TBD Events", "TEAR-MATRES Events"]), alpha=0.5)
-            plt.savefig(f"../analysis/{doc}")
+            plt.savefig(f"../analysis/figures/{doc}_venn")
 
             for pair in itertools.combinations(SRCS, 2):
                 found_in_both = venn[pair[0]] & venn[pair[1]] # intersection between the two sets
