@@ -1,0 +1,105 @@
+Doc ID: 20413485
+	Events extracted by 'oneie': 311
+	Events extracted by 'tear-tbd': 822
+	Events extracted by 'tear-matres': 516
+	Events extracted by ('oneie', 'tear-tbd'): 247
+		Relations in set with confidence >= 0.75: 368, 1.49
+		Relations in set with confidence >= 0.85: 131, 0.53
+		Relations in set with confidence >= 0.95: 10, 0.04
+	Events extracted by ('oneie', 'tear-matres'): 117
+		Relations in set with confidence >= 0.75: 259, 2.21
+		Relations in set with confidence >= 0.85: 102, 0.87
+		Relations in set with confidence >= 0.95: 10, 0.09
+	Events extracted by ('tear-tbd', 'tear-matres'): 481
+		Relations in set with confidence >= 0.75: 702, 1.46
+		Relations in set with confidence >= 0.85: 261, 0.54
+		Relations in set with confidence >= 0.95: 23, 0.05
+	Events extracted by ('oneie', 'tear-tbd', 'tear-matres'): 116
+		Relations in set with confidence >= 0.75: 259, 2.23
+		Relations in set with confidence >= 0.85: 102, 0.88
+		Relations in set with confidence >= 0.95: 10, 0.09
+- - - - - - - - - -
+Doc ID: 31332346
+	Events extracted by 'oneie': 57
+	Events extracted by 'tear-tbd': 108
+	Events extracted by 'tear-matres': 66
+	Events extracted by ('oneie', 'tear-tbd'): 47
+		Relations in set with confidence >= 0.75: 40, 0.85
+		Relations in set with confidence >= 0.85: 19, 0.4
+		Relations in set with confidence >= 0.95: 2, 0.04
+	Events extracted by ('oneie', 'tear-matres'): 24
+		Relations in set with confidence >= 0.75: 34, 1.42
+		Relations in set with confidence >= 0.85: 15, 0.62
+		Relations in set with confidence >= 0.95: 2, 0.08
+	Events extracted by ('tear-tbd', 'tear-matres'): 60
+		Relations in set with confidence >= 0.75: 90, 1.5
+		Relations in set with confidence >= 0.85: 39, 0.65
+		Relations in set with confidence >= 0.95: 7, 0.12
+	Events extracted by ('oneie', 'tear-tbd', 'tear-matres'): 23
+		Relations in set with confidence >= 0.75: 33, 1.43
+		Relations in set with confidence >= 0.85: 15, 0.65
+		Relations in set with confidence >= 0.95: 2, 0.09
+- - - - - - - - - -
+Doc ID: 30214215
+	Events extracted by 'oneie': 420
+	Events extracted by 'tear-tbd': 704
+	Events extracted by 'tear-matres': 501
+	Events extracted by ('oneie', 'tear-tbd'): 315
+		Relations in set with confidence >= 0.75: 174, 0.55
+		Relations in set with confidence >= 0.85: 57, 0.18
+		Relations in set with confidence >= 0.95: 1, 0.0
+	Events extracted by ('oneie', 'tear-matres'): 156
+		Relations in set with confidence >= 0.75: 160, 1.03
+		Relations in set with confidence >= 0.85: 55, 0.35
+		Relations in set with confidence >= 0.95: 1, 0.01
+	Events extracted by ('tear-tbd', 'tear-matres'): 382
+		Relations in set with confidence >= 0.75: 307, 0.8
+		Relations in set with confidence >= 0.85: 111, 0.29
+		Relations in set with confidence >= 0.95: 3, 0.01
+	Events extracted by ('oneie', 'tear-tbd', 'tear-matres'): 146
+		Relations in set with confidence >= 0.75: 159, 1.09
+		Relations in set with confidence >= 0.85: 54, 0.37
+		Relations in set with confidence >= 0.95: 1, 0.01
+- - - - - - - - - -
+Doc ID: 60232721
+	Events extracted by 'oneie': 339
+	Events extracted by 'tear-tbd': 898
+	Events extracted by 'tear-matres': 542
+	Events extracted by ('oneie', 'tear-tbd'): 255
+		Relations in set with confidence >= 0.75: 336, 1.32
+		Relations in set with confidence >= 0.85: 136, 0.53
+		Relations in set with confidence >= 0.95: 15, 0.06
+	Events extracted by ('oneie', 'tear-matres'): 111
+		Relations in set with confidence >= 0.75: 260, 2.34
+		Relations in set with confidence >= 0.85: 113, 1.02
+		Relations in set with confidence >= 0.95: 15, 0.14
+	Events extracted by ('tear-tbd', 'tear-matres'): 494
+		Relations in set with confidence >= 0.75: 847, 1.71
+		Relations in set with confidence >= 0.85: 358, 0.72
+		Relations in set with confidence >= 0.95: 41, 0.08
+	Events extracted by ('oneie', 'tear-tbd', 'tear-matres'): 106
+		Relations in set with confidence >= 0.75: 259, 2.44
+		Relations in set with confidence >= 0.85: 113, 1.07
+		Relations in set with confidence >= 0.95: 15, 0.14
+- - - - - - - - - -
+Doc ID: 55245801
+	Events extracted by 'oneie': 67
+	Events extracted by 'tear-tbd': 204
+	Events extracted by 'tear-matres': 114
+	Events extracted by ('oneie', 'tear-tbd'): 51
+		Relations in set with confidence >= 0.75: 97, 1.9
+		Relations in set with confidence >= 0.85: 32, 0.63
+		Relations in set with confidence >= 0.95: 3, 0.06
+	Events extracted by ('oneie', 'tear-matres'): 19
+		Relations in set with confidence >= 0.75: 61, 3.21
+		Relations in set with confidence >= 0.85: 20, 1.05
+		Relations in set with confidence >= 0.95: 3, 0.16
+	Events extracted by ('tear-tbd', 'tear-matres'): 110
+		Relations in set with confidence >= 0.75: 207, 1.88
+		Relations in set with confidence >= 0.85: 86, 0.78
+		Relations in set with confidence >= 0.95: 10, 0.09
+	Events extracted by ('oneie', 'tear-tbd', 'tear-matres'): 19
+		Relations in set with confidence >= 0.75: 61, 3.21
+		Relations in set with confidence >= 0.85: 20, 1.05
+		Relations in set with confidence >= 0.95: 3, 0.16
+- - - - - - - - - -

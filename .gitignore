@@ -1,0 +1,7 @@
+data/oneie/
+data/tear/
+data/*.json
+
+.vscode/
+.DS_Store/
+__pycache__/
