@@ -86,6 +86,14 @@ def write_intersection_stats(graph: dict, doc: str, out_f: object, pair: tuple, 
 
     return
 
+def plot_venn_diagrams(venn, doc):
+    plt.figure()
+    c = venn3_unweighted([venn["oneie"], venn["tear-tbd"], venn["tear-matres"]], tuple(
+        ["OneIE Events", "TEAR-TBD Events", "TEAR-MATRES Events"]), alpha=0.5)
+    plt.savefig(f"../analysis/figures/{doc}_venn")
+
+    return
+
 def generate_text_report_and_figures(graph):
     with open(f"../analysis/{TODAY}.txt", "w") as out_f:
         for doc in graph:
@@ -95,7 +103,7 @@ def generate_text_report_and_figures(graph):
 
             venn = {}
             for src in SRCS:
-                pdb.set_trace()
+
                 src_docs = [x for x in graph[doc]
                             if src in graph[doc][x]["source"]]
 
@@ -107,10 +115,7 @@ def generate_text_report_and_figures(graph):
 
                 venn[src] = Counter(src_docs)
             
-            plt.figure()
-            c = venn3_unweighted([venn["oneie"], venn["tear-tbd"], venn["tear-matres"]], tuple(
-                ["OneIE Events", "TEAR-TBD Events", "TEAR-MATRES Events"]), alpha=0.5)
-            plt.savefig(f"../analysis/figures/{doc}_venn")
+            plot_venn_diagrams(venn, doc)
 
             for pair in itertools.combinations(SRCS, 2):
                 pair_intersection = venn[pair[0]] & venn[pair[1]]
@@ -124,7 +129,7 @@ def generate_text_report_and_figures(graph):
     return
 
 
-def genearate_csv_appendix(graph):
+def generate_csv_appendix(graph):
     with open(f"../analysis/appendix/{TODAY}.csv", "w") as csvf:
         csv_writer = csv.writer(csvf,)
         csv_writer.writerow(["event_token", "event_span", "doc_id", "source_MATRES", "source_TBD",
@@ -163,7 +168,7 @@ def main():
         graph = json.load(f)
 
     generate_text_report_and_figures(graph) 
-    genearate_csv_appendix(graph)
+    generate_csv_appendix(graph)
 
     return
 

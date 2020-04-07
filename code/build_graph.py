@@ -35,7 +35,7 @@ def read_file_into_dict(file_path: str) -> dict:
     return json_dict
 
 def standardize_oneie_format(oneie_raw: dict) -> dict:
-    total_events = 0
+    
     oneie_formatted = {}
     for doc in oneie_raw.keys():
         oneie_formatted[doc] = {}
@@ -47,8 +47,6 @@ def standardize_oneie_format(oneie_raw: dict) -> dict:
                 start_trig_idx = seg["token_ids"][trig[0]]
                 idxs = start_trig_idx.split(":")[1].split("-")
                 full_idx = "".join(["[", idxs[0], ":", str(int(idxs[1])+1), ")"])
-
-                total_events += 1
 
                 idx_to_event[i] = {
                         "event_id": full_idx,
@@ -77,9 +75,10 @@ def standardize_oneie_format(oneie_raw: dict) -> dict:
             # add event to the final events graph
             oneie_formatted[doc]["events"].extend(list(idx_to_event.values()))
 
-        print(f"{doc}: {total_events}, {len(oneie_formatted[doc]['events'])}")
-
     return oneie_formatted
+
+def get_token_from_mention_id(graph, mention_id):
+    return next(mention for mention in graph["mentions"] if mention["mention_id"] == mention_id)["text"]
 
 def combine_graphs(graphs: Dict[str, dict]) -> dict:
 
@@ -94,7 +93,7 @@ def combine_graphs(graphs: Dict[str, dict]) -> dict:
 
             all_events_in_g = graphs[g][doc]["events"]
             events_in_supergraph = supergraph[doc].keys()
-            
+
             for event in all_events_in_g:
                 new_event = {}
                 
@@ -105,7 +104,12 @@ def combine_graphs(graphs: Dict[str, dict]) -> dict:
                     new_event["type"] = event["type"]
                     new_event["oneie_args"] = event["arguments"]
                 else:
-                    new_event[f"{g}_args"] = event["arguments"] #TODO: get text from mention_id 
+                    args = event["arguments"]
+                    args_with_tokens = []
+                    for arg in args:
+                        token = get_token_from_mention_id(graphs[g][doc], arg["mention_id"])
+                        args_with_tokens.append({"role": arg["role"], "token": token})
+                    new_event[f"{g}_args"] = args_with_tokens
                 
                 if event_id in events_in_supergraph:
                     for key in new_event:
