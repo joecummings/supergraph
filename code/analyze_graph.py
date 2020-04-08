@@ -1,9 +1,11 @@
+import argparse
 import csv
-from datetime import date
 import itertools
 import json
 import pdb
+import random
 from collections import Counter
+from datetime import date
 from pathlib import Path
 from typing import Dict, List
 
@@ -15,6 +17,7 @@ DATA_FOLDER = Path("../data/")
 SRCS = ["oneie", "tear-tbd", "tear-matres"]
 BOUNDS = [0.75, 0.85, 0.95]
 TODAY = date.today()
+random.seed(7)
 
 def get_unique_relations(all_rel):
     return [dict(s) for s in set(frozenset(rel.items()) for rel in all_rel)] # have to filter out the duplicates
@@ -94,13 +97,44 @@ def plot_venn_diagrams(venn, doc):
 
     return
 
-def generate_text_report_and_figures(graph):
+def analyze_arguments(graph, good_events):
+    
+    # spot_checks = random.sample(list(good_events), k=15) # why 15?
+    
+    similar_count = 0
+    total_count = 0
+    target = 260
+
+    while total_count < target:
+
+        key = random.sample(list(good_events), k=1)[0]
+    
+        tbd_args = graph[key].get("tear-tbd_args", [])
+        oneie_args = graph[key].get("oneie_args", [])
+        
+        try:
+            num_of_good_args = input(f"\n{tbd_args}\n{oneie_args}\nHow many of these args line up?\n")
+            num_of_good_args = int(num_of_good_args)
+        except ValueError:
+
+            num_of_good_args = int(input("Try again..."))
+        total_args = len(tbd_args) + len(oneie_args)
+
+        similar_count += num_of_good_args
+        total_count += total_args
+
+        print(total_count)
+    print("next doc...")
+    return round(similar_count/total_count, 2)
+
+
+
+def generate_text_report_and_figures(graph, eval_args):
     with open(f"../analysis/{TODAY}.txt", "w") as out_f:
         for doc in graph:
             out_f.write(f"Doc ID: {doc}\n")
 
             plot_rel_distribution(doc, graph)
-
             venn = {}
             for src in SRCS:
 
@@ -124,6 +158,11 @@ def generate_text_report_and_figures(graph):
             triple_intersection = venn[SRCS[0]] & venn[SRCS[1]] & venn[SRCS[2]]
             write_intersection_stats(graph, doc, out_f, tuple(SRCS), triple_intersection)
 
+            if eval_args:
+                argument_avgs = analyze_arguments(graph[doc], triple_intersection)
+                out_f.write("\t*\n")
+                out_f.write(f"\tDoc argument overlap average: {argument_avgs}\n")
+            
             out_f.write("- - - - - - - - - -\n")
 
     return
@@ -162,16 +201,21 @@ def generate_csv_appendix(graph):
     return
 
 
-def main():
-
+def main(args):
+    
     with open(DATA_FOLDER / "output/supergraph.json", "r") as f:
         graph = json.load(f)
 
-    generate_text_report_and_figures(graph) 
+    generate_text_report_and_figures(graph, args.eval_args) 
     generate_csv_appendix(graph)
 
     return
 
 
 if __name__ == "__main__":
-    main()
+
+    p = argparse.ArgumentParser()
+    p.add_argument("--eval-args", action="store_true", help="Flag to bring up the argument evaluator in execution")
+    args = p.parse_args()
+    
+    main(args)
